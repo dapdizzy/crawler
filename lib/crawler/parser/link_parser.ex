@@ -31,7 +31,7 @@ defmodule Crawler.Parser.LinkParser do
       iex> )
       "{\\\"src\\\", \\\"http://hello.world\\\"}"
   """
-  def parse({tag, attrs, _}, opts, link_handler) do
+  def parse({tag, attrs, html}, opts, link_handler, link_collector \\ nil) do
     src = @tag_attr[tag]
 
     with {_tag, link} <- detect_link(src, attrs),
@@ -39,9 +39,20 @@ defmodule Crawler.Parser.LinkParser do
     do
       opts = Map.merge(opts, %{html_tag: tag})
 
+      if link_collector, do: link_collector.(element |> get_url, html |> get_text)
+
       link_handler.(element, opts)
     end
   end
+
+  defp get_url(element)
+
+  defp get_url({_, _link, _, url}), do: url
+  defp get_url({_, url}), do: url
+
+  defp get_text(html)
+
+  defp get_text(html), do: Floki.text(html)
 
   defp detect_link(src, attrs) do
     Enum.find(attrs, fn(attr) ->

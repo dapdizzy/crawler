@@ -32,10 +32,10 @@ defmodule Crawler.Mixfile do
       {:opq,         "~> 3.0"},
       {:retry,       "~> 0.10"},
       {:plug_cowboy, "~> 1.0",   only: :test},
-      {:ex_doc,      ">= 0.0.0", only: :dev},
+      {:ex_doc,      ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir,    "~> 0.5",   only: [:dev, :test], runtime: false},
       {:bypass,      "~> 1.0",   only: :test},
-      {:excoveralls, "~> 0.7",   only: :test},
+      {:excoveralls, "~> 0.12.0",   only: :test, runtime: false},
     ]
   end
 

@@ -29,7 +29,7 @@ defmodule Crawler.Worker do
   def handle_cast(_req, state) do
     state
     |> Fetcher.fetch()
-    |> state[:parser].parse()
+    |> state[:parser].parse(state[:link_collector])
     |> mark_processed()
 
     {:noreply, state}

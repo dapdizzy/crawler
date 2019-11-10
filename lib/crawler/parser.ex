@@ -88,26 +88,26 @@ defmodule Crawler.Parser do
       iex> page.body
       "\#{image_file()}"
   """
-  def parse(input)
+  def parse(input, link_collector \\ nil)
 
-  def parse({:error, reason}), do: Logger.debug(fn -> "#{inspect(reason)}" end)
-  def parse(%{body: body, opts: opts} = page) do
-    parse_links(body, opts, &Dispatcher.dispatch(&1, &2))
+  def parse({:error, reason}, _link_collector), do: Logger.debug(fn -> "#{inspect(reason)}" end)
+  def parse(%{body: body, opts: opts} = page, link_collector) do
+    parse_links(body, opts, &Dispatcher.dispatch(&1, &2), link_collector)
 
     {:ok, _page} = opts[:scraper].scrape(page)
   end
 
-  def parse_links(body, opts, link_handler) do
+  def parse_links(body, opts, link_handler, link_collector \\ nil) do
     opts
     |> Guarder.pass?()
-    |> do_parse_links(body, opts, link_handler)
+    |> do_parse_links(body, opts, link_handler, link_collector)
   end
 
-  defp do_parse_links(false, _body, _opts, _link_handler), do: []
-  defp do_parse_links(true, body, opts, link_handler) do
+  defp do_parse_links(false, _body, _opts, _link_handler, _link_collector), do: []
+  defp do_parse_links(true, body, opts, link_handler, link_collector) do
     Enum.map(
       parse_file(body, opts),
-      &LinkParser.parse(&1, opts, link_handler)
+      &LinkParser.parse(&1, opts, link_handler, link_collector)
     )
   end
 
